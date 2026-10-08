@@ -93,6 +93,81 @@ class pos_database{
         )
       ''');
     }
+    Future<Product> createProduct({
+      required String barcode, 
+      required String name, 
+      required double defaultPrice,
+      required double taxRate,
+    }) async{
+      final db = await instance.database;
+      
+    }
+    Future<User> createUser({
+      required String username, 
+      required String password, 
+      required String email,
+      required String role,
+    }) async{
+      final db = await instance.database;
+      
+    }
+    Future<InventoryBatch> createInventoryBatch({
+      required String productId, 
+      required int quantity, 
+      required String receivedDate,
+      required String? expiryDate,
+    }) async{
+      final db = await instance.database;
+      
+    }
+    Future<Transaction> createTransaction({
+      required String cashierId, 
+      required double subtotal, 
+      required double taxAmount,
+      required double discountAmount,
+      required double grandTotal,
+      required String paymentMethod,
+      required String timestamp,
+      required int syncStatus,
+    }) async{
+      final db = await instance.database;
+      
+    }
+    Future<TransactionItem> createTransactionItem({
+      required String transactionId, 
+      required String productId, 
+      required int quantity,
+      required double unitPriceAtSale,
+      required double lineTotal,
+    }) async{
+      final db = await instance.database;
+      
+    }
+   Future<void> createProduct(Product product) async {
+      final db = await instance.database;
+      
+      await db.insert(tableProducts, product.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<void> createUser(User user) async {
+      final db = await instance.database;
+      await db.insert(tableusers, user.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<void> createInventoryBatch(InventoryBatch batch) async {
+      final db = await instance.database;
+      await db.insert(tableInventoryBatches, batch.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<void> createTransaction(Transaction transaction) async {
+      final db = await instance.database;
+      await db.insert(tableTransactions, transaction.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<void> createTransactionItem(TransactionItem item) async {
+      final db = await instance.database;
+      await db.insert(tableTransactionItems, item.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
 
 
     Future close() async{

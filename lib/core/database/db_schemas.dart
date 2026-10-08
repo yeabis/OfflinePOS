@@ -26,6 +26,25 @@ class Product {
     required this.defaultPrice,
     required this.taxRate,
   });
+
+  Map<String, Object?> toJson() {
+    return {
+      ProductFields.id: id,
+      ProductFields.barcode: barcode,
+      ProductFields.name: name,
+      ProductFields.defaultPrice: defaultPrice,
+      ProductFields.taxRate: taxRate,
+    };
+  }
+  static Product fromJson(Map<String, Object?> json) {
+    return Product(
+      id: json[ProductFields.id] as String,
+      barcode: json[ProductFields.barcode] as String,
+      name: json[ProductFields.name] as String,
+      defaultPrice: json[ProductFields.defaultPrice] as double,
+      taxRate: json[ProductFields.taxRate] as double,
+    );
+  }
 }
 
 final String tableusers = 'users';
@@ -59,6 +78,16 @@ class User {
     required this.role,
     required this.createdAt,
   });
+  Map<String, Object?> toJson() {
+    return {
+      UserFields.id: id,
+      UserFields.username: username,
+      UserFields.password: password,
+      UserFields.email: email,
+      UserFields.role: role,
+      UserFields.createdAt: createdAt,
+    };
+  }
 }
 
 final String tableInventoryBatches = 'inventory_batches';
@@ -92,6 +121,15 @@ class InventoryBatch {
     required this.receivedDate,
     this.expiryDate, 
   });
+  Map<String, Object?> toJson() {
+    return {
+      InventoryBatchFields.id: id,
+      InventoryBatchFields.productId: productId,
+      InventoryBatchFields.quantity: quantity,
+      InventoryBatchFields.receivedDate: receivedDate,
+      InventoryBatchFields.expiryDate: expiryDate,
+    };
+  }
 }
 
 
@@ -139,6 +177,19 @@ class Transaction {
     required this.timestamp,
     required this.syncStatus,
   });
+  Map<String, Object?> toJson() {
+    return {
+      TransactionFields.id: id,
+      TransactionFields.cashierId: cashierId,
+      TransactionFields.subtotal: subtotal,
+      TransactionFields.taxAmount: taxAmount,
+      TransactionFields.discountAmount: discountAmount,
+      TransactionFields.grandTotal: grandTotal,
+      TransactionFields.paymentMethod: paymentMethod,
+      TransactionFields.timestamp: timestamp,
+      TransactionFields.syncStatus: syncStatus,
+    };
+  }
 }
 
 
@@ -173,4 +224,15 @@ class TransactionItem {
     required this.unitPriceAtSale,
     required this.lineTotal,
   });
+  Map<String, Object?> toJson() {
+    return {
+      TransactionItemFields.id: id,
+      TransactionItemFields.transactionId: transactionId,
+      TransactionItemFields.productId: productId,
+      TransactionItemFields.quantity: quantity,
+      TransactionItemFields.unitPriceAtSale: unitPriceAtSale,
+      TransactionItemFields.lineTotal: lineTotal,
+    };
+  }
 }
+
