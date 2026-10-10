@@ -234,6 +234,101 @@ class pos_database{
       final result = await db.query(tableTransactionItems);
       return result.map((json) => TransactionItem.fromJson(json)).toList();
     }
+    Future<int> updateProduct(Product product) async {
+      final db = await instance.database;
+      return db.update(
+        tableProducts,
+        product.toJson(),
+        where: '${ProductFields.id} = ?',
+        whereArgs: [product.id],
+      );
+    }
+
+    Future<int> deleteProduct(String id) async {
+      final db = await instance.database;
+      return await db.delete(
+        tableProducts,
+        where: '${ProductFields.id} = ?',
+        whereArgs: [id],
+      );
+    }
+
+    Future<int> updateUser(User user) async {
+      final db = await instance.database;
+      return db.update(
+        tableusers,
+        user.toJson(),
+        where: '${UserFields.id} = ?',
+        whereArgs: [user.id],
+      );
+    }
+
+    Future<int> deleteUser(String id) async {
+      final db = await instance.database;
+      return await db.delete(
+        tableusers,
+        where: '${UserFields.id} = ?',
+        whereArgs: [id],
+      );
+    }
+
+    Future<int> updateInventoryBatch(InventoryBatch batch) async {
+      final db = await instance.database;
+      return db.update(
+        tableInventoryBatches,
+        batch.toJson(),
+        where: '${InventoryBatchFields.id} = ?',
+        whereArgs: [batch.id],
+      );
+    }
+
+    Future<int> deleteInventoryBatch(String id) async {
+      final db = await instance.database;
+      return await db.delete(
+        tableInventoryBatches,
+        where: '${InventoryBatchFields.id} = ?',
+        whereArgs: [id],
+      );
+    }
+
+    Future<int> updateTransaction(Transaction transaction) async {
+      final db = await instance.database;
+      return db.update(
+        tableTransactions,
+        transaction.toJson(),
+        where: '${TransactionFields.id} = ?',
+        whereArgs: [transaction.id],
+      );
+    }
+
+    Future<int> deleteTransaction(String id) async {
+      final db = await instance.database;
+      return await db.delete(
+        tableTransactions,
+        where: '${TransactionFields.id} = ?',
+        whereArgs: [id],
+      );
+    }
+
+    Future<int> updateTransactionItem(TransactionItem item) async {
+      final db = await instance.database;
+      return db.update(
+        tableTransactionItems,
+        item.toJson(),
+        where: '${TransactionItemFields.id} = ?',
+        whereArgs: [item.id],
+      );
+    }
+
+    Future<int> deleteTransactionItem(String id) async {
+      final db = await instance.database;
+      return await db.delete(
+        tableTransactionItems,
+        where: '${TransactionItemFields.id} = ?',
+        whereArgs: [id],
+      );
+    }
+
     Future close() async{
       final db = await instance.database;
       db.close();
