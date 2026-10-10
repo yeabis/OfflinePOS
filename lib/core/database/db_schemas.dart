@@ -88,6 +88,17 @@ class User {
       UserFields.createdAt: createdAt,
     };
   }
+
+  static User fromJson(Map<String, Object?> json) {
+    return User(
+      id: json[UserFields.id] as String,
+      username: json[UserFields.username] as String,
+      password: json[UserFields.password] as String,
+      email: json[UserFields.email] as String,
+      role: json[UserFields.role] as String,
+      createdAt: json[UserFields.createdAt] as String,
+    );
+  }
 }
 
 final String tableInventoryBatches = 'inventory_batches';
@@ -129,6 +140,16 @@ class InventoryBatch {
       InventoryBatchFields.receivedDate: receivedDate,
       InventoryBatchFields.expiryDate: expiryDate,
     };
+  }
+
+  static InventoryBatch fromJson(Map<String, Object?> json) {
+    return InventoryBatch(
+      id: json[InventoryBatchFields.id] as String,
+      productId: json[InventoryBatchFields.productId] as String,
+      quantity: json[InventoryBatchFields.quantity] as int,
+      receivedDate: json[InventoryBatchFields.receivedDate] as String,
+      expiryDate: json[InventoryBatchFields.expiryDate] as String?,
+    );
   }
 }
 
@@ -190,6 +211,20 @@ class Transaction {
       TransactionFields.syncStatus: syncStatus,
     };
   }
+
+  static Transaction fromJson(Map<String, Object?> json) {
+    return Transaction(
+      id: json[TransactionFields.id] as String,
+      cashierId: json[TransactionFields.cashierId] as String,
+      subtotal: json[TransactionFields.subtotal] as double,
+      taxAmount: json[TransactionFields.taxAmount] as double,
+      discountAmount: json[TransactionFields.discountAmount] as double,
+      grandTotal: json[TransactionFields.grandTotal] as double,
+      paymentMethod: json[TransactionFields.paymentMethod] as String,
+      timestamp: json[TransactionFields.timestamp] as String,
+      syncStatus: json[TransactionFields.syncStatus] as int,
+    );
+  }
 }
 
 
@@ -233,6 +268,17 @@ class TransactionItem {
       TransactionItemFields.unitPriceAtSale: unitPriceAtSale,
       TransactionItemFields.lineTotal: lineTotal,
     };
+  }
+
+  static TransactionItem fromJson(Map<String, Object?> json) {
+    return TransactionItem(
+      id: json[TransactionItemFields.id] as String,
+      transactionId: json[TransactionItemFields.transactionId] as String,
+      productId: json[TransactionItemFields.productId] as String,
+      quantity: json[TransactionItemFields.quantity] as int,
+      unitPriceAtSale: json[TransactionItemFields.unitPriceAtSale] as double,
+      lineTotal: json[TransactionItemFields.lineTotal] as double,
+    );
   }
 }
 

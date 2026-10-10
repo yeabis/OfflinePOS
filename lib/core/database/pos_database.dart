@@ -93,60 +93,34 @@ class pos_database{
         )
       ''');
     }
-    Future<Product> createProduct({
-      required String barcode, 
-      required String name, 
-      required double defaultPrice,
-      required double taxRate,
-    }) async{
-      final db = await instance.database;
-      
-    }
-    Future<User> createUser({
-      required String username, 
-      required String password, 
-      required String email,
-      required String role,
-    }) async{
-      final db = await instance.database;
-      
-    }
-    Future<InventoryBatch> createInventoryBatch({
-      required String productId, 
-      required int quantity, 
-      required String receivedDate,
-      required String? expiryDate,
-    }) async{
-      final db = await instance.database;
-      
-    }
-    Future<Transaction> createTransaction({
-      required String cashierId, 
-      required double subtotal, 
-      required double taxAmount,
-      required double discountAmount,
-      required double grandTotal,
-      required String paymentMethod,
-      required String timestamp,
-      required int syncStatus,
-    }) async{
-      final db = await instance.database;
-      
-    }
-    Future<TransactionItem> createTransactionItem({
-      required String transactionId, 
-      required String productId, 
-      required int quantity,
-      required double unitPriceAtSale,
-      required double lineTotal,
-    }) async{
-      final db = await instance.database;
-      
-    }
+
    Future<void> createProduct(Product product) async {
       final db = await instance.database;
       
       await db.insert(tableProducts, product.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<Product> readProduct(String id) async {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        tableProducts,
+        columns: ProductFields.values,
+        where: '${ProductFields.id} = ?',
+        whereArgs: [id],
+      );
+
+      if (maps.isNotEmpty) {
+        return Product.fromJson(maps.first);
+      } else {
+        throw Exception('ID $id not found');
+      }
+    }
+
+    Future<List<Product>> readAllProducts() async {
+      final db = await instance.database;
+      final result = await db.query(tableProducts);
+      return result.map((json) => Product.fromJson(json)).toList();
     }
 
     Future<void> createUser(User user) async {
@@ -154,9 +128,55 @@ class pos_database{
       await db.insert(tableusers, user.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
+    Future<User> readUser(String id) async {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        tableusers,
+        columns: UserFields.values,
+        where: '${UserFields.id} = ?',
+        whereArgs: [id],
+      );
+
+      if (maps.isNotEmpty) {
+        return User.fromJson(maps.first);
+      } else {
+        throw Exception('ID $id not found');
+      }
+    }
+
+    Future<List<User>> readAllUsers() async {
+      final db = await instance.database;
+      final result = await db.query(tableusers);
+      return result.map((json) => User.fromJson(json)).toList();
+    }
+
     Future<void> createInventoryBatch(InventoryBatch batch) async {
       final db = await instance.database;
       await db.insert(tableInventoryBatches, batch.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    Future<InventoryBatch> readInventoryBatch(String id) async {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        tableInventoryBatches,
+        columns: InventoryBatchFields.values,
+        where: '${InventoryBatchFields.id} = ?',
+        whereArgs: [id],
+      );
+
+      if (maps.isNotEmpty) {
+        return InventoryBatch.fromJson(maps.first);
+      } else {
+        throw Exception('ID $id not found');
+      }
+    }
+
+    Future<List<InventoryBatch>> readAllInventoryBatches() async {
+      final db = await instance.database;
+      final result = await db.query(tableInventoryBatches);
+      return result.map((json) => InventoryBatch.fromJson(json)).toList();
     }
 
     Future<void> createTransaction(Transaction transaction) async {
@@ -164,12 +184,56 @@ class pos_database{
       await db.insert(tableTransactions, transaction.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
+    Future<Transaction> readTransaction(String id) async {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        tableTransactions,
+        columns: TransactionFields.values,
+        where: '${TransactionFields.id} = ?',
+        whereArgs: [id],
+      );
+
+      if (maps.isNotEmpty) {
+        return Transaction.fromJson(maps.first);
+      } else {
+        throw Exception('ID $id not found');
+      }
+    }
+
+    Future<List<Transaction>> readAllTransactions() async {
+      final db = await instance.database;
+      final result = await db.query(tableTransactions);
+      return result.map((json) => Transaction.fromJson(json)).toList();
+    }
+
     Future<void> createTransactionItem(TransactionItem item) async {
       final db = await instance.database;
       await db.insert(tableTransactionItems, item.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
+    Future<TransactionItem> readTransactionItem(String id) async {
+      final db = await instance.database;
 
+      final maps = await db.query(
+        tableTransactionItems,
+        columns: TransactionItemFields.values,
+        where: '${TransactionItemFields.id} = ?',
+        whereArgs: [id],
+      );
+
+      if (maps.isNotEmpty) {
+        return TransactionItem.fromJson(maps.first);
+      } else {
+        throw Exception('ID $id not found');
+      }
+    }
+
+    Future<List<TransactionItem>> readAllTransactionItems() async {
+      final db = await instance.database;
+      final result = await db.query(tableTransactionItems);
+      return result.map((json) => TransactionItem.fromJson(json)).toList();
+    }
     Future close() async{
       final db = await instance.database;
       db.close();
