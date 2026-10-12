@@ -47,7 +47,7 @@ class Product {
   }
 }
 
-final String tableusers = 'users';
+final String tableUsers = 'users';
 
 class UserFields {
   static final List<String> values = [

@@ -1,5 +1,5 @@
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqflite.dart' hide Transaction;
 import 'package:offline_pos/core/database/db_schemas.dart';
 
 class pos_database{
@@ -44,7 +44,7 @@ class pos_database{
       ''');
 
       await db.execute('''
-        CREATE TABLE $tableusers (
+        CREATE TABLE $tableUsers (
           ${UserFields.id} $idType,
           ${UserFields.username} $textType,
           ${UserFields.password} $textType,
@@ -125,14 +125,14 @@ class pos_database{
 
     Future<void> createUser(User user) async {
       final db = await instance.database;
-      await db.insert(tableusers, user.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+      await db.insert(tableUsers, user.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
     Future<User> readUser(String id) async {
       final db = await instance.database;
 
       final maps = await db.query(
-        tableusers,
+        tableUsers,
         columns: UserFields.values,
         where: '${UserFields.id} = ?',
         whereArgs: [id],
@@ -147,7 +147,7 @@ class pos_database{
 
     Future<List<User>> readAllUsers() async {
       final db = await instance.database;
-      final result = await db.query(tableusers);
+      final result = await db.query(tableUsers);
       return result.map((json) => User.fromJson(json)).toList();
     }
 
@@ -256,7 +256,7 @@ class pos_database{
     Future<int> updateUser(User user) async {
       final db = await instance.database;
       return db.update(
-        tableusers,
+        tableUsers,
         user.toJson(),
         where: '${UserFields.id} = ?',
         whereArgs: [user.id],
@@ -266,7 +266,7 @@ class pos_database{
     Future<int> deleteUser(String id) async {
       final db = await instance.database;
       return await db.delete(
-        tableusers,
+        tableUsers,
         where: '${UserFields.id} = ?',
         whereArgs: [id],
       );
