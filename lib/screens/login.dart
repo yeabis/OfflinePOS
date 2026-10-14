@@ -13,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
   @override
   void dispose() {
     _usernameController.dispose();
@@ -156,31 +157,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
-            
-            SizedBox(height: 20,), 
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:[
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF222A3D),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(70),
-                              ),
-                            ),
-                            onPressed: () {
-                               
-                            },
-                            child: const Icon(Icons.fingerprint, size: 30, color: Colors.white),
-                        ),
-                    ]
-            ),),
-          ],
-        ),),
+            ],
+          ),
+        ),
       ),
     );
   }
