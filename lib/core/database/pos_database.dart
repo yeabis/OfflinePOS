@@ -92,6 +92,15 @@ class PosDatabase {
           FOREIGN KEY (${TransactionItemFields.productId}) REFERENCES $tableProducts (${ProductFields.id})
         )
       ''');
+
+      await db.insert(tableUsers, {
+        UserFields.id: 'user_001',
+        UserFields.username: 'almaz',
+        UserFields.password: '1234',
+        UserFields.email: 'admin@suk.com',
+        UserFields.role: 'Owner',
+        UserFields.createdAt: DateTime.now().toIso8601String(),
+      });
     }
 
    Future<void> createProduct(Product product) async {
@@ -329,13 +338,25 @@ class PosDatabase {
       );
     }
 
-    Future close() async{
+    Future close() async {
       final db = await instance.database;
       db.close();
-    } 
+    }
 
+    Future<Map<String, dynamic>?> login(String username, String password) async {
+      final db = await database;
+      final List<Map<String, dynamic>> result = await db.query(
+        tableUsers,
+        where: '${UserFields.username} = ? AND ${UserFields.password} = ?',
+        whereArgs: [username, password],
+      );
 
-
-
+      if (result.isNotEmpty) {
+        return result.first;
+      } else {
+        return null;
+      }
+    }
 }
+
 

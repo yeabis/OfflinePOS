@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
+import '../core/database/pos_database.dart';
+import 'casherpage.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +31,7 @@ class LoginPage extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.only(top: 0),
-              child: Image.asset('assets/images/suklogo.png',
+              child: Image.asset('assets/images/logo.png',
               width: 200,
               height: 200,
               ),
@@ -38,7 +55,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
-                
+                    controller: _usernameController,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.badge, color: Colors.grey, size: 20),
@@ -63,6 +80,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: true,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
@@ -96,7 +114,40 @@ class LoginPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    final username = _usernameController.text.trim();
+                    final password = _passwordController.text.trim();
+
+                    if (username.isEmpty || password.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter username and password"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                  final user = await PosDatabase.instance.login(username, password);
+
+                  if (user != null) {
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CasherPage()),
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Invalid username or password'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+
                     
                   },
                   child: const Text(
