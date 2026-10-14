@@ -2,12 +2,12 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart' hide Transaction;
 import 'package:offline_pos/core/database/db_schemas.dart';
 
-class pos_database{
-    static final pos_database instance = pos_database._init();
+class PosDatabase {
+  static final PosDatabase instance = PosDatabase._init();
 
-    static Database? _database;
-    
-    pos_database._init();
+  static Database? _database;
+
+  PosDatabase._init();
 
     Future<Database> get database async{
       if(_database != null) return _database!;

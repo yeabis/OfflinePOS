@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.only(top: 0),
-              child: Image.asset('assets/images/logo.png',
+              child: Image.asset('assets/images/suklogo.png',
               width: 200,
               height: 200,
               ),
