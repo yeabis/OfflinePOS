@@ -63,8 +63,12 @@ class CasherPage extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  const Positioned.fill(
-                    child: CameraScanner(),
+                  Positioned.fill(
+                    child: CameraScanner(
+                      onBarcodeScanned: (scannedCode) {
+                        _barcodeController.text = scannedCode;
+                      },
+                    ),
                   ),
                   
                 ],
