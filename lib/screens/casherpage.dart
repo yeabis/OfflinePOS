@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../widgets/camera_scanner.dart';
 
@@ -22,7 +21,7 @@ class CasherPage extends StatelessWidget {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.only( 30.0),
+              padding: EdgeInsets.only(left: 30.0),
               child: Text(
                 "Cashier : Almaz",
                 style: TextStyle(
@@ -67,62 +66,7 @@ class CasherPage extends StatelessWidget {
                   const Positioned.fill(
                     child: CameraScanner(),
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClipOval(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: const CircleBorder(
-                                  side: BorderSide(color: Colors.white54, width: 1.2),
-                                ),
-                                backgroundColor: Colors.white.withValues(alpha: 0.15),
-                                shadowColor: Colors.transparent,
-                                elevation: 0,
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(50, 50),
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.flash_on,
-                                size: 30,
-                                color: Colors.cyanAccent.shade400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        ClipOval(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: const CircleBorder(
-                                  side: BorderSide(color: Colors.white54, width: 1.2),
-                                ),
-                                backgroundColor: Colors.white.withValues(alpha: 0.15),
-                                shadowColor: Colors.transparent,
-                                elevation: 0,
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(50, 50),
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.vibration,
-                                size: 30,
-                                color: Colors.cyanAccent.shade400,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
