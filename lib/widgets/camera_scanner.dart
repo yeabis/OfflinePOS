@@ -21,8 +21,43 @@ class _CameraScannerState extends State<CameraScanner> {
   String _lastScannedCode = '';
   bool _isProcessing = false;
   
-  bool _soundEnabled = false; 
+  bool _soundEnabled = true; 
   final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    _initAudio();
+  }
+
+  Future<void> _initAudio() async {
+    try {
+      await _audioPlayer.setPlayerMode(PlayerMode.lowLatency);
+      await _audioPlayer.setVolume(1.0);
+      await _audioPlayer.setAudioContext(
+        AudioContext(
+          android: AudioContextAndroid(
+            isSpeakerphoneOn: true,
+            stayAwake: false,
+            contentType: AndroidContentType.sonification,
+            usageType: AndroidUsageType.assistanceSonification,
+            audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint("Audio init error: $e");
+    }
+  }
+
+  void _playBeep() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/beep.wav'), volume: 1.0);
+    } catch (e) {
+      debugPrint("Beep playback error: $e");
+    }
+  }
 
   @override
   void dispose() {
@@ -60,7 +95,7 @@ class _CameraScannerState extends State<CameraScanner> {
                     HapticFeedback.heavyImpact();
                     
                     if (_soundEnabled) {
-                      _audioPlayer.play(AssetSource('sounds/beep.wav'));
+                      _playBeep();
                     }
 
                     if (widget.onBarcodeScanned != null) {
