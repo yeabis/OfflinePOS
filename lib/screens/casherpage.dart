@@ -1,6 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../widgets/camera_scanner.dart';
 import 'package:flutter/services.dart';
+import '../core/database/pos_database.dart';
 
 class CasherPage extends StatefulWidget {
   const CasherPage({super.key});
@@ -17,26 +19,38 @@ class _CasherPageState extends State<CasherPage> {
   double get _subtotal => _cart.fold(0.0, (sum, item) => sum + (item['price'] * item['qty']));
   double get _tax => _subtotal * 0.15;
   double get _grandTotal => _subtotal + _tax;
-
+  int get _cartItems => _cart.fold(0, (sum, item) => sum + (item['qty'] as int));
   @override
   void dispose() {
   _barcodeController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleScan(String barcode) async {
-    if (barcode.isEmpty) return;
+  Future<void> _handleScan(String input) async {
+    if (input.isEmpty) return;
+    
+    String searchTerm = input.trim().toLowerCase(); 
     Map<String, dynamic>? product;
-    if (barcode == "123456789") {
-      product = {'id': 'prod_1', 'name': 'Bottled Water', 'price': 15.0};
-    } else {
-      product = {'id': 'prod_2', 'name': 'Unknown Scanned Item', 'price': 99.0};
+
+    if (searchTerm == "6972476860584" || searchTerm == "small notebook") {
+      product = {'id': 'prod_1', 'name': 'Small Notebook', 'price': 15.0};
+    } else if (searchTerm == "911249496120" || searchTerm == "big notebook") {
+      product = {'id': 'prod_2', 'name': 'Big Notebook', 'price': 25.0};
+    } else if (searchTerm == "8992696420557" || searchTerm == "nescafe") {
+      product = {'id': 'prod_3', 'name': 'Nescafe', 'price': 5.0};
+    } else if (searchTerm == "3587925290152" || searchTerm == "cotten-cotten") {
+      product = {'id': 'prod_4', 'name': 'Cotten-Cotten', 'price': 2.0};
+    } else if (searchTerm == "8850124011053" || searchTerm == "coffeemate") {
+      product = {'id': 'prod_5', 'name': 'coffeemate', 'price': 7.0};
+    } else {  
+      product = null;
     }
 
     if (product != null) {
       HapticFeedback.lightImpact();
       setState(() {
         int existingIndex = _cart.indexWhere((item) => item['id'] == product!['id']);
+        
         if (existingIndex >= 0) {
           _cart[existingIndex]['qty'] += 1; 
         } else {
@@ -49,6 +63,18 @@ class _CasherPageState extends State<CasherPage> {
         }
       });
       _barcodeController.clear(); 
+    } else {
+      if (mounted) {
+        HapticFeedback.vibrate(); 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Item not found in database"),
+            backgroundColor: Colors.redAccent,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      _barcodeController.clear();
     }
   }
 
@@ -64,7 +90,7 @@ class _CasherPageState extends State<CasherPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.only(left: 1.0),
               child: Image.asset(
                 'assets/images/logo.png',
                 width: 200,
@@ -72,7 +98,7 @@ class _CasherPageState extends State<CasherPage> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.only(left: 30.0),
+              padding: EdgeInsets.only(right: 1.0),
               child: Text(
                 "Cashier : Almaz",
                 style: TextStyle(
@@ -108,10 +134,10 @@ class _CasherPageState extends State<CasherPage> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   height: 400,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
+                    
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Stack(
@@ -119,9 +145,8 @@ class _CasherPageState extends State<CasherPage> {
                       Positioned.fill(
                         child: CameraScanner(
                           onBarcodeScanned: (scannedCode) {
-                            setState(() {
-                              _barcodeController.text = scannedCode;
-                            });
+                            _barcodeController.text = scannedCode;
+                            _handleScan(scannedCode);
                           },
                         ),
                       ),
@@ -132,6 +157,9 @@ class _CasherPageState extends State<CasherPage> {
                 TextFormField(
                   controller: _barcodeController, 
                   style: const TextStyle(color: Colors.white), 
+                  onFieldSubmitted: (value) {
+                    _handleScan(value.trim());
+                  },
                   decoration: InputDecoration(
                     suffixIcon: Padding(
                       padding: const EdgeInsets.all(4.0),
@@ -145,6 +173,7 @@ class _CasherPageState extends State<CasherPage> {
                             ),
                           ),
                           onPressed: () {
+                            _handleScan(_barcodeController.text.trim());
                           },
                           child: const Text(
                             "Done",
@@ -165,35 +194,81 @@ class _CasherPageState extends State<CasherPage> {
                   
                 ),
                 SizedBox(height: 20,),
-                Text("Cart Items: ${_cart.length}", style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold,)),
+                Text("Cart Items: $_cartItems", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                 SizedBox(height: 20,),
-                Container(
-                  width: double.infinity,
-                  constraints: const BoxConstraints(minHeight: 150),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white24),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: _cart.isEmpty 
-                    ? const Center(
-                        child: Text("Cart is empty", style: TextStyle(color: Colors.white54)),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(), 
-                        itemCount: _cart.length,
-                        itemBuilder: (context, index) {
-                          final item = _cart[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: const Color(0xFF102E4A),
-                              child: Text("${item['qty']}", style: const TextStyle(color: Colors.white)),
-                            ),
-                            title: Text(item['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            trailing: Text("\$${(item['price'] * item['qty']).toStringAsFixed(2)}", style: const TextStyle(color: Color(0xFF00EAEA), fontSize: 18)),
-                          );
-                        },
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                    child: Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(minHeight: 150),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05), 
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: _cart.isEmpty 
+                        ? const Center(
+                            child: Text("Cart is empty", style: TextStyle(color: Colors.white54)),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(), 
+                            itemCount: _cart.length,
+                            itemBuilder: (context, index) {
+                              final item = _cart[index];
+                              
+                              return Dismissible(
+                                key: Key(item['id']),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  color: Colors.redAccent,
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: const Icon(Icons.delete, color: Colors.white),
+                                ),
+                                onDismissed: (direction) {
+                                  setState(() {
+                                    _cart.removeAt(index);
+                                  });
+                                  HapticFeedback.mediumImpact();
+                                },
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: const Color(0xFF102E4A),
+                                    child: Text("${item['qty']}", style: const TextStyle(color: Colors.white)),
+                                  ),
+                                  title: Text(item['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_cart[index]['qty'] > 1) {
+                                              _cart[index]['qty'] -= 1; 
+                                            } else {
+                                              _cart.removeAt(index); 
+                                            }
+                                          });
+                                          HapticFeedback.lightImpact();
+                                        },
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "\$${(item['price'] * item['qty']).toStringAsFixed(2)}", 
+                                        style: const TextStyle(color: Color(0xFF00EAEA), fontSize: 18)
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 20,),
                 Container(
@@ -227,7 +302,50 @@ class _CasherPageState extends State<CasherPage> {
                     ),
                   ),
                   onPressed: () async {
+                    if (_cart.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Cart is empty!")),
+                      );
+                      return;
+                    }
 
+                    
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF00EAEA))),
+                    );
+
+                
+                    await Future.delayed(const Duration(seconds: 1));
+
+                  
+                    if (context.mounted) Navigator.pop(context);
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: const Color(0xFF102E4A),
+                          title: const Icon(Icons.check_circle, color: Colors.greenAccent, size: 50),
+                          content: Text(
+                            "Payment Successful!\n\nTotal Paid: \$${_grandTotal.toStringAsFixed(2)}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); 
+                                setState(() {
+                                  _cart.clear();
+                                });
+                              },
+                              child: const Text("Next Customer", style: TextStyle(color: Color(0xFF00EAEA), fontSize: 16)),
+                            )
+                          ],
+                        ),
+                      );
+                    }
                   },
                   child: Center(
                     child: Row(
@@ -237,7 +355,7 @@ class _CasherPageState extends State<CasherPage> {
                         "Checkout",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      
+
                       Icon(Icons.arrow_forward),
                     ],),
                   ),
