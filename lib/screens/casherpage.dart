@@ -214,6 +214,34 @@ class _CasherPageState extends State<CasherPage> {
                     ],
                   ),
                 ),
+                SizedBox(height: 30,),
+                Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CD7F6), 
+                    foregroundColor: const Color(0xFF121617), 
+                    minimumSize: const Size(double.infinity, 55), 
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  onPressed: () async {
+
+                  },
+                  child: Center(
+                    child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Checkout",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      
+                      Icon(Icons.arrow_forward),
+                    ],),
+                  ),
+                ),),
                 
                 
               ],
