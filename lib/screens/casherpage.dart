@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/camera_scanner.dart';
+import 'package:flutter/services.dart';
 
 class CasherPage extends StatefulWidget {
   const CasherPage({super.key});
@@ -11,11 +12,44 @@ class CasherPage extends StatefulWidget {
 class _CasherPageState extends State<CasherPage> {
   final TextEditingController _barcodeController = TextEditingController();
 
+  final List<Map<String, dynamic>> _cart = [];
+
   @override
   void dispose() {
   _barcodeController.dispose();
     super.dispose();
   }
+
+  Future<void> _handleScan(String barcode) async {
+    if (barcode.isEmpty) return;
+    Map<String, dynamic>? product;
+    if (barcode == "123456789") {
+      product = {'id': 'prod_1', 'name': 'Bottled Water', 'price': 15.0};
+    } else {
+      product = {'id': 'prod_2', 'name': 'Unknown Scanned Item', 'price': 99.0};
+    }
+
+    if (product != null) {
+      HapticFeedback.lightImpact();
+      setState(() {
+        int existingIndex = _cart.indexWhere((item) => item['id'] == product!['id']);
+        if (existingIndex >= 0) {
+          _cart[existingIndex]['qty'] += 1; 
+        } else {
+          _cart.add({
+            'id': product!['id'],
+            'name': product!['name'],
+            'price': product!['price'],
+            'qty': 1,
+          });
+        }
+      });
+      _barcodeController.clear(); 
+    }
+  }
+
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -95,32 +129,70 @@ class _CasherPageState extends State<CasherPage> {
                   controller: _barcodeController, 
                   style: const TextStyle(color: Colors.white), 
                   decoration: InputDecoration(
-                    suffixIcon: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4CD7F6),
-                        foregroundColor: const Color(0xFF121617),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(60, 60),
+                            backgroundColor: const Color(0xFF102E4A),
+                            foregroundColor: const Color(0xFF121617),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                          },
+                          child: const Text(
+                            "Done",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
-                      onPressed: () {
-                      },
-                      child: const Text(
-                        "Done",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     hintText: 'Item name...',
                     hintStyle: const TextStyle(color: Colors.grey),
                   ),
+                  
                 ),
+                SizedBox(height: 20,),
+                Text("Cart Items: ${_cart.length}", style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold,)),
+                SizedBox(height: 20,),
+                Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(minHeight: 150),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white24),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: _cart.isEmpty 
+                    ? const Center(
+                        child: Text("Cart is empty", style: TextStyle(color: Colors.white54)),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(), 
+                        itemCount: _cart.length,
+                        itemBuilder: (context, index) {
+                          final item = _cart[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: const Color(0xFF102E4A),
+                              child: Text("${item['qty']}", style: const TextStyle(color: Colors.white)),
+                            ),
+                            title: Text(item['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            trailing: Text("\$${(item['price'] * item['qty']).toStringAsFixed(2)}", style: const TextStyle(color: Color(0xFF00EAEA), fontSize: 18)),
+                          );
+                        },
+                      ),
+                ),
+                
+                
               ],
             ),
           ),
