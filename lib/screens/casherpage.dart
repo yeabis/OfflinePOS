@@ -14,6 +14,10 @@ class _CasherPageState extends State<CasherPage> {
 
   final List<Map<String, dynamic>> _cart = [];
 
+  double get _subtotal => _cart.fold(0.0, (sum, item) => sum + (item['price'] * item['qty']));
+  double get _tax => _subtotal * 0.15;
+  double get _grandTotal => _subtotal + _tax;
+
   @override
   void dispose() {
   _barcodeController.dispose();
@@ -190,6 +194,25 @@ class _CasherPageState extends State<CasherPage> {
                           );
                         },
                       ),
+                ),
+                SizedBox(height: 20,),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF102E4A),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Subtotal: \$${_subtotal.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text("Tax (15%): \$${_tax.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Divider(color: Colors.white54, height: 24),
+                      Text("Grand Total: \$${_grandTotal.toStringAsFixed(2)}", style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
                 ),
                 
                 
