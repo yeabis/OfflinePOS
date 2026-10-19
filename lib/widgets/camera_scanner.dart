@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart'; 
+import 'package:audioplayers/audioplayers.dart'; 
 
 class CameraScanner extends StatefulWidget {
   final Function(String)? onBarcodeScanned;
@@ -18,9 +19,14 @@ class _CameraScannerState extends State<CameraScanner> {
   );
 
   String _lastScannedCode = '';
+  bool _isProcessing = false;
+  
+  bool _soundEnabled = false; 
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void dispose() {
+    _audioPlayer.dispose();
     _scannerController.dispose();
     super.dispose();
   }
@@ -32,31 +38,43 @@ class _CameraScannerState extends State<CameraScanner> {
         color: Colors.black26,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: ClipRRect( 
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            
             MobileScanner(
               controller: _scannerController,
               onDetect: (capture) {
+                if (_isProcessing) return;
+
                 final List<Barcode> barcodes = capture.barcodes;
                 for (final barcode in barcodes) {
                   final code = barcode.rawValue;
-                  
-                  if (code != null && code != _lastScannedCode) {
-                    _lastScannedCode = code; 
 
+                  if (code != null && code != _lastScannedCode) {
+                    _isProcessing = true;
+                    _lastScannedCode = code;
+
+                   
                     HapticFeedback.heavyImpact();
                     
+                    if (_soundEnabled) {
+                      _audioPlayer.play(AssetSource('sounds/beep.wav'));
+                    }
+
                     if (widget.onBarcodeScanned != null) {
                       widget.onBarcodeScanned!(code);
                     }
 
                     Future.delayed(const Duration(seconds: 2), () {
-                      if (mounted) setState(() => _lastScannedCode = '');
+                      if (mounted) {
+                        _isProcessing = false;
+                        _lastScannedCode = '';
+                      }
                     });
+
+                    break;
                   }
                 }
               },
@@ -72,7 +90,6 @@ class _CameraScannerState extends State<CameraScanner> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  
                   ClipOval(
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
@@ -111,9 +128,16 @@ class _CameraScannerState extends State<CameraScanner> {
                           fixedSize: const Size(50, 50),
                         ),
                         onPressed: () {
-                          HapticFeedback.heavyImpact();
+                          setState(() {
+                            _soundEnabled = !_soundEnabled;
+                          });
+                          HapticFeedback.selectionClick(); 
                         },
-                        icon: Icon(Icons.vibration, size: 30, color: Colors.cyanAccent.shade400),
+                        icon: Icon(
+                          _soundEnabled ? Icons.volume_up : Icons.vibration, 
+                          size: 30, 
+                          color: _soundEnabled ? Colors.cyanAccent.shade400 : Colors.white,
+                        ),
                       ),
                     ),
                   ),

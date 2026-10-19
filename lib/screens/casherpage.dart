@@ -26,43 +26,31 @@ class _CasherPageState extends State<CasherPage> {
     super.dispose();
   }
 
-  Future<void> _handleScan(String input) async {
-    if (input.isEmpty) return;
-    
-    String searchTerm = input.trim().toLowerCase(); 
-    Map<String, dynamic>? product;
+  Future<void> _handleScan(String barcode) async {
+    if (barcode.isEmpty) return;
 
-    if (searchTerm == "6972476860584" || searchTerm == "small notebook") {
-      product = {'id': 'prod_1', 'name': 'Small Notebook', 'price': 15.0};
-    } else if (searchTerm == "911249496120" || searchTerm == "big notebook") {
-      product = {'id': 'prod_2', 'name': 'Big Notebook', 'price': 25.0};
-    } else if (searchTerm == "8992696420557" || searchTerm == "nescafe") {
-      product = {'id': 'prod_3', 'name': 'Nescafe', 'price': 5.0};
-    } else if (searchTerm == "3587925290152" || searchTerm == "cotten-cotten") {
-      product = {'id': 'prod_4', 'name': 'Cotten-Cotten', 'price': 2.0};
-    } else if (searchTerm == "8850124011053" || searchTerm == "coffeemate") {
-      product = {'id': 'prod_5', 'name': 'coffeemate', 'price': 7.0};
-    } else {  
-      product = null;
-    }
+    final product = await PosDatabase.instance.getProductByBarcode(barcode);
 
+  
     if (product != null) {
       HapticFeedback.lightImpact();
+      
       setState(() {
-        int existingIndex = _cart.indexWhere((item) => item['id'] == product!['id']);
+        int existingIndex = _cart.indexWhere((item) => item['id'] == product.id);
         
         if (existingIndex >= 0) {
           _cart[existingIndex]['qty'] += 1; 
         } else {
           _cart.add({
-            'id': product!['id'],
-            'name': product!['name'],
-            'price': product!['price'],
+            'id': product.id,
+            'name': product.name,
+            'price': product.defaultPrice, 
             'qty': 1,
           });
         }
       });
       _barcodeController.clear(); 
+      
     } else {
       if (mounted) {
         HapticFeedback.vibrate(); 

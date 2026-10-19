@@ -20,10 +20,14 @@ class PosDatabase {
       final dbPath = await getDatabasesPath();
       final path = join(dbPath, filePath);
 
-      return await openDatabase(path, version: 1, onCreate: _createDB);
-
-
-
+      return await openDatabase(
+        path,
+        version: 1,
+        onCreate: _createDB,
+        onOpen: (db) async {
+          await _seedInitialProducts(db);
+        },
+      );
     }
 
     Future _createDB(Database db , int version)async{
@@ -101,6 +105,24 @@ class PosDatabase {
         UserFields.role: 'Owner',
         UserFields.createdAt: DateTime.now().toIso8601String(),
       });
+
+      await _seedInitialProducts(db);
+    }
+
+    Future<void> _seedInitialProducts(Database db) async {
+      final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableProducts')) ?? 0;
+      if (count == 0) {
+        final initialProducts = [
+          const Product(id: 'prod_1', barcode: '6972476860584', name: 'Small Notebook', defaultPrice: 15.0, taxRate: 0.15),
+          const Product(id: 'prod_2', barcode: '911249496120', name: 'Big Notebook', defaultPrice: 25.0, taxRate: 0.15),
+          const Product(id: 'prod_3', barcode: '8992696420557', name: 'Nescafe', defaultPrice: 5.0, taxRate: 0.15),
+          const Product(id: 'prod_4', barcode: '3587925290152', name: 'Cotten-Cotten', defaultPrice: 2.0, taxRate: 0.15),
+          const Product(id: 'prod_5', barcode: '8850124011053', name: 'coffeemate', defaultPrice: 7.0, taxRate: 0.15),
+        ];
+        for (final p in initialProducts) {
+          await db.insert(tableProducts, p.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+      }
     }
 
    Future<void> createProduct(Product product) async {
@@ -130,6 +152,23 @@ class PosDatabase {
       final db = await instance.database;
       final result = await db.query(tableProducts);
       return result.map((json) => Product.fromJson(json)).toList();
+    }
+
+    Future<Product?> getProductByBarcode(String barcode) async {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        tableProducts,
+        columns: ProductFields.values,
+        where: '${ProductFields.barcode} = ? OR LOWER(${ProductFields.name}) = ?',
+        whereArgs: [barcode.trim(), barcode.trim().toLowerCase()],
+      );
+
+      if (maps.isNotEmpty) {
+        return Product.fromJson(maps.first);
+      } else {
+        return null;
+      }
     }
 
     Future<void> createUser(User user) async {
