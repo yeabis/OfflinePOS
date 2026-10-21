@@ -24,19 +24,39 @@ class MainNavigation extends StatelessWidget {
         ),
 
        
-        bottomNavigationBar: Container(
-          color: const Color(0xFF1E2738),
-          child: const SafeArea(
-            child: TabBar(
-              indicatorColor: Colors.cyanAccent,
-              labelColor: Colors.cyanAccent,
-              unselectedLabelColor: Colors.white54,
-              indicatorWeight: 3,
-              tabs: [
-                Tab(icon: Icon(Icons.point_of_sale), text: "Checkout"),
-                Tab(icon: Icon(Icons.receipt_long), text: "History"),
-                Tab(icon: Icon(Icons.inventory_2), text: "Inventory"),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(left: 32, right: 32, bottom: 24),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E2738),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3), 
+                  blurRadius: 10, 
+                  offset: const Offset(0, 5),
+                ),
               ],
+            ),
+            child: const SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: TabBar(
+                  dividerColor: Colors.transparent, 
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    color: Color(0xFF0B1326), 
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                  ),
+                  labelColor: Colors.cyanAccent,
+                  unselectedLabelColor: Colors.white54,
+                  tabs: [
+                    Tab(icon: Icon(Icons.point_of_sale)),
+                    Tab(icon: Icon(Icons.receipt_long)),
+                    Tab(icon: Icon(Icons.inventory_2)),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
