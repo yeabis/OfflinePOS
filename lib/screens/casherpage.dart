@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/camera_scanner.dart';
 import 'package:flutter/services.dart';
 import '../core/database/pos_database.dart';
+import 'Receipt.dart';
 
 class CasherPage extends StatefulWidget {
   const CasherPage({super.key});
@@ -307,33 +308,29 @@ class _CasherPageState extends State<CasherPage> {
                 
                     await Future.delayed(const Duration(seconds: 1));
 
-                  
-                    if (context.mounted) Navigator.pop(context);
                     if (context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          backgroundColor: const Color(0xFF102E4A),
-                          title: const Icon(Icons.check_circle, color: Colors.greenAccent, size: 50),
-                          content: Text(
-                            "Payment Successful!\n\nTotal Paid: \$${_grandTotal.toStringAsFixed(2)}",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context); 
-                                setState(() {
-                                  _cart.clear();
-                                });
-                              },
-                              child: const Text("Next Customer", style: TextStyle(color: Color(0xFF00EAEA), fontSize: 16)),
-                            )
-                          ],
-                        ),
-                      );
+                      Navigator.pop(context); 
                     }
+
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReceiptPage(
+                            cart: List.from(_cart),
+                            subtotal: _subtotal,
+                            tax: _tax,
+                            grandTotal: _grandTotal,
+                          ),
+                        ),
+                      ).then((_) {
+                        setState(() {
+                          _cart.clear();
+                        });
+                      });
+                    }
+
+
                   },
                   child: Center(
                     child: Row(
@@ -346,7 +343,7 @@ class _CasherPageState extends State<CasherPage> {
 
                       Icon(Icons.arrow_forward),
                     ],),
-                  ),
+                  ), 
                 ),
                 ),
                 

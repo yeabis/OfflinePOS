@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'casherpage.dart';
 
 class ReceiptPage extends StatefulWidget {
-  const ReceiptPage({super.key});
+  final List<Map<String, dynamic>> cart;
+  final double subtotal;
+  final double tax;
+  final double grandTotal;
+
+  const ReceiptPage({
+    super.key,
+    required this.cart,
+    required this.subtotal,
+    required this.tax,
+    required this.grandTotal,
+  });
 
   @override
   State<ReceiptPage> createState() => _ReceiptPageState();
@@ -11,6 +23,8 @@ class ReceiptPage extends StatefulWidget {
 class _ReceiptPageState extends State<ReceiptPage> {
   @override
   Widget build(BuildContext context) {
+    final String billNo = "#SK-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}";
+    final String dateTime = "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} • ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
     return Scaffold(
       backgroundColor: const Color(0xFF0B1326),
       appBar: AppBar(
@@ -73,9 +87,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
                   const SizedBox(height: 16),
                   const Divider(color: Colors.black26, thickness: 1),
                   const SizedBox(height: 8),
-                  _buildMetaRow("BILL NO:", "#SK-2026-001"),
+                  _buildMetaRow("BILL NO:", billNo),
                   const SizedBox(height: 6),
-                  _buildMetaRow("DATE / TIME:", "21 OCT 2026 • 20:59"),
+                  _buildMetaRow("DATE / TIME:", dateTime),
                   const SizedBox(height: 6),
                   _buildMetaRow("CASHIER:", "Almaz (ID: #402)"),
                   const SizedBox(height: 12),
@@ -91,19 +105,23 @@ class _ReceiptPageState extends State<ReceiptPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  _buildReceiptItem("Small Notebook", 2, 15.0),
-                  _buildReceiptItem("Nescafe 3-in-1", 3, 5.0),
-                  _buildReceiptItem("Big Notebook", 1, 25.0),
+                  ...widget.cart.map((item) {
+                    return _buildReceiptItem(
+                      item['name'],
+                      item['qty'],
+                      item['price'],
+                    );
+                  }),
 
                   const SizedBox(height: 12),
                   const Divider(color: Colors.black26, thickness: 1),
                   const SizedBox(height: 8),
 
-                  _buildSummaryRow("SUBTOTAL:", "\$70.00"),
+                  _buildSummaryRow("SUBTOTAL:", "\$${widget.subtotal.toStringAsFixed(2)}"),
                   const SizedBox(height: 6),
-                  _buildSummaryRow("TAX (15% VAT):", "\$10.50"),
+                  _buildSummaryRow("TAX (15% VAT):", "\$${widget.tax.toStringAsFixed(2)}"),
                   const SizedBox(height: 10),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -111,9 +129,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
                         style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w900),
                       ),
                       Text(
-                        "\$80.50",
-                        style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w900),
-                      ),
+                        "\$${widget.grandTotal.toStringAsFixed(2)}",
+                        style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w900),
+                      )
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -138,7 +156,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
                     icon: 'assets/icons/thermal_printer.svg',
                     label: "Print Receipt",
                     sublabel: "By Thermal",
-                    onTap: () {},
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Printing...")));
+                    }
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -163,7 +183,12 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 minimumSize: const Size(double.infinity, 55),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CasherPage(),
+                      ),
+                    ),
               icon: const Icon(Icons.refresh, size: 24),
               label: const Text(
                 "New Sale (Reset Scanner)",

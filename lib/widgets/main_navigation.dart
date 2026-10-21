@@ -19,7 +19,7 @@ class MainNavigation extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(), 
           children: [
             CasherPage(), 
-            ReceiptPage(),
+            Center(child: Text("Receipt Screen", style: TextStyle(color: Colors.white))),
             Center(child: Text("Inventory Screen", style: TextStyle(color: Colors.white))),
           ],
         ),
