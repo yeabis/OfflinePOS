@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../core/database/pos_database.dart';
-import 'casherpage.dart';
 import '../widgets/main_navigation.dart';
 
 class LoginPage extends StatefulWidget {

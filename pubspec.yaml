@@ -41,6 +41,7 @@ dependencies:
   path: ^1.9.1
   mobile_scanner: ^7.4.2
   audioplayers: ^6.8.1
+  flutter_svg: ^2.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,6 +69,7 @@ flutter:
   assets:
     - assets/images/
     - assets/sounds/
+    - assets/icons/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
