@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/database/pos_database.dart';
 import 'casherpage.dart';
+import '../widgets/main_navigation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                       if (context.mounted) {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => const CasherPage()),
+                          MaterialPageRoute(builder: (context) => const MainNavigation()),
                         );
                       }
                     } else {

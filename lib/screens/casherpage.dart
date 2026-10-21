@@ -347,7 +347,8 @@ class _CasherPageState extends State<CasherPage> {
                       Icon(Icons.arrow_forward),
                     ],),
                   ),
-                ),),
+                ),
+                ),
                 
                 
               ],
