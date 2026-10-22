@@ -168,7 +168,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
                     fallbackIcon: Icons.mail_outline,
                     label: "Send Receipt",
                     sublabel: "By Email or SMS",
-                    onTap: () {},
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Sending...")));
+                    },
                   ),
                 ),
               ],
@@ -183,12 +185,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 minimumSize: const Size(double.infinity, 55),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
-              onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CasherPage(),
-                      ),
-                    ),
+              onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.refresh, size: 24),
               label: const Text(
                 "New Sale (Reset Scanner)",

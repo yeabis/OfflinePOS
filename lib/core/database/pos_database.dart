@@ -255,6 +255,93 @@ class PosDatabase {
       return result.map((json) => Transaction.fromJson(json)).toList();
     }
 
+    Future<List<Map<String, dynamic>>> getAllTransactions() async {
+
+      final db = await instance.database;
+      
+      final List<Map<String, dynamic>> transactionRows = await db.query(
+        tableTransactions,
+        orderBy: '${TransactionFields.timestamp} DESC',
+      );
+
+      List<Map<String, dynamic>> fullTransactions = [];
+
+      for (var row in transactionRows) {
+        final transactionId = row[TransactionFields.id] as String;
+
+        final List<Map<String, dynamic>> itemRows = await db.rawQuery('''
+          SELECT 
+            ti.${TransactionItemFields.id} AS id,
+            ti.${TransactionItemFields.productId} AS productId,
+            ti.${TransactionItemFields.quantity} AS qty,
+            ti.${TransactionItemFields.unitPriceAtSale} AS price,
+            ti.${TransactionItemFields.lineTotal} AS total,
+            p.${ProductFields.name} AS name
+          FROM $tableTransactionItems ti
+          LEFT JOIN $tableProducts p ON ti.${TransactionItemFields.productId} = p.${ProductFields.id}
+          WHERE ti.${TransactionItemFields.transactionId} = ?
+        ''', [transactionId]);
+
+        fullTransactions.add({
+          'id': transactionId,
+          'billNo': '#SK-${transactionId.length > 6 ? transactionId.substring(0, 6).toUpperCase() : transactionId}',
+          'date': row[TransactionFields.timestamp] ?? 'Unknown Date',
+          'cashierId': row[TransactionFields.cashierId],
+          'subtotal': row[TransactionFields.subtotal],
+          'tax': row[TransactionFields.taxAmount],
+          'grandTotal': row[TransactionFields.grandTotal],
+          'paymentMethod': row[TransactionFields.paymentMethod],
+          'cart': itemRows,
+        });
+      }
+
+      return fullTransactions;
+    }
+
+    Future<String> saveTransaction({
+      required List<Map<String, dynamic>> cart,
+      required double subtotal,
+      required double tax,
+      required double grandTotal,
+      String cashierId = 'user_001',
+      String paymentMethod = 'CASH',
+    }) async {
+      final db = await instance.database;
+      final transactionId = 'TX_${DateTime.now().millisecondsSinceEpoch}';
+      final now = DateTime.now().toIso8601String();
+
+      await db.transaction((txn) async {
+        await txn.insert(tableTransactions, {
+          TransactionFields.id: transactionId,
+          TransactionFields.cashierId: cashierId,
+          TransactionFields.subtotal: subtotal,
+          TransactionFields.taxAmount: tax,
+          TransactionFields.discountAmount: 0.0,
+          TransactionFields.grandTotal: grandTotal,
+          TransactionFields.paymentMethod: paymentMethod,
+          TransactionFields.timestamp: now,
+          TransactionFields.syncStatus: 0,
+        });
+
+        for (int i = 0; i < cart.length; i++) {
+          final item = cart[i];
+          final itemId = '${transactionId}_item_$i';
+          final qty = (item['qty'] as num?)?.toInt() ?? 1;
+          final price = (item['price'] as num?)?.toDouble() ?? 0.0;
+          await txn.insert(tableTransactionItems, {
+            TransactionItemFields.id: itemId,
+            TransactionItemFields.transactionId: transactionId,
+            TransactionItemFields.productId: item['id'] as String? ?? 'unknown',
+            TransactionItemFields.quantity: qty,
+            TransactionItemFields.unitPriceAtSale: price,
+            TransactionItemFields.lineTotal: qty * price,
+          });
+        }
+      });
+
+      return transactionId;
+    }
+
     Future<void> createTransactionItem(TransactionItem item) async {
       final db = await instance.database;
       await db.insert(tableTransactionItems, item.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);

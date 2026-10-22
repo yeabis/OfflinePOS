@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/casherpage.dart';
-import '../screens/Receipt.dart';
+import '../screens/history.dart';
 
 
 
@@ -19,7 +19,7 @@ class MainNavigation extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(), 
           children: [
             CasherPage(), 
-            Center(child: Text("Receipt Screen", style: TextStyle(color: Colors.white))),
+            HistoryPage(),
             Center(child: Text("Inventory Screen", style: TextStyle(color: Colors.white))),
           ],
         ),
