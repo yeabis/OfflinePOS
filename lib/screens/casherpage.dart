@@ -4,6 +4,7 @@ import '../widgets/camera_scanner.dart';
 import 'package:flutter/services.dart';
 import '../core/database/pos_database.dart';
 import 'Receipt.dart';
+import 'Payment.dart';
 
 class CasherPage extends StatefulWidget {
   const CasherPage({super.key});
@@ -316,7 +317,7 @@ class _CasherPageState extends State<CasherPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ReceiptPage(
+                          builder: (context) => PaymentTenderPage(
                             cart: List.from(_cart),
                             subtotal: _subtotal,
                             tax: _tax,
