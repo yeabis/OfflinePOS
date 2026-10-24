@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/casherpage.dart';
 import '../screens/history.dart';
+import '../screens/dashboard.dart';
 
 
 
@@ -24,7 +25,7 @@ class MainNavigation extends StatelessWidget {
             const CasherPage(), 
             const HistoryPage(),
             if (isAdmin) 
-              const Center(child: Text("Dashboard", style: TextStyle(color: Colors.white))),
+              const AdminDashboardPage(),
           ],
         ),
 
