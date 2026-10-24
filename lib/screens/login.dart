@@ -129,27 +129,23 @@ class _LoginPageState extends State<LoginPage> {
                       return;
                     }
 
-                  final user = await PosDatabase.instance.login(username, password);
+                 final user = await PosDatabase.instance.login(username, password);
 
-                  if (user != null) {
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const MainNavigation()),
-                        );
-                      }
+                    if (user != null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainNavigation(isAdmin: user['role'] == 'Owner'),
+                        ),
+                      );
                     } else {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Invalid username or password'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invalid username or password'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                     }
-
-                    
                   },
                   child: const Text(
                     "SIGN IN ➔",

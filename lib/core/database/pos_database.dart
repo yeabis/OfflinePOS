@@ -102,9 +102,20 @@ class PosDatabase {
         UserFields.username: 'almaz',
         UserFields.password: '1234',
         UserFields.email: 'admin@suk.com',
+        UserFields.role: 'cashier',
+        UserFields.createdAt: DateTime.now().toIso8601String(),
+      });
+
+      await db.insert(tableUsers, {
+        UserFields.id: 'user_002',
+        UserFields.username: 'aaron',
+        UserFields.password: '1234',
+        UserFields.email: 'aaron@suk.com',
         UserFields.role: 'Owner',
         UserFields.createdAt: DateTime.now().toIso8601String(),
       });
+
+
 
       await _seedInitialProducts(db);
     }

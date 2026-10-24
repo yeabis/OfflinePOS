@@ -5,22 +5,25 @@ import '../screens/history.dart';
 
 
 class MainNavigation extends StatelessWidget {
-  const MainNavigation({super.key});
+  final bool isAdmin;
+  const MainNavigation({super.key, required this.isAdmin});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, 
+      length: isAdmin ? 3 : 2, 
       child: Scaffold(
         backgroundColor: const Color(0xFF0B1326),
+        extendBody: true,
         
         
-        body: const TabBarView(
-          physics: NeverScrollableScrollPhysics(), 
+        body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(), 
           children: [
-            CasherPage(), 
-            HistoryPage(),
-            Center(child: Text("Inventory Screen", style: TextStyle(color: Colors.white))),
+            const CasherPage(), 
+            const HistoryPage(),
+            if (isAdmin) 
+              const Center(child: Text("Store Hub & Dashboard", style: TextStyle(color: Colors.white))),
           ],
         ),
 
@@ -39,7 +42,7 @@ class MainNavigation extends StatelessWidget {
                 ),
               ],
             ),
-            child: const SafeArea(
+            child: SafeArea(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: TabBar(
@@ -54,7 +57,8 @@ class MainNavigation extends StatelessWidget {
                   tabs: [
                     Tab(icon: Icon(Icons.point_of_sale)),
                     Tab(icon: Icon(Icons.receipt_long)),
-                    Tab(icon: Icon(Icons.inventory_2)),
+                    if (isAdmin) 
+                      const Tab(icon: Icon(Icons.dashboard)),
                   ],
                 ),
               ),
