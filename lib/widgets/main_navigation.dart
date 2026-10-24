@@ -14,16 +14,17 @@ class MainNavigation extends StatelessWidget {
       length: isAdmin ? 3 : 2, 
       child: Scaffold(
         backgroundColor: const Color(0xFF0B1326),
-        extendBody: true,
+        extendBody: false,
+        resizeToAvoidBottomInset: false,
         
         
         body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(), 
+          physics: NeverScrollableScrollPhysics(), 
           children: [
             const CasherPage(), 
             const HistoryPage(),
             if (isAdmin) 
-              const Center(child: Text("Store Hub & Dashboard", style: TextStyle(color: Colors.white))),
+              const Center(child: Text("Dashboard", style: TextStyle(color: Colors.white))),
           ],
         ),
 
